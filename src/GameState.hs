@@ -4,6 +4,7 @@ import Data.Char
 --import Data.List
 import Data.Map as Map
 import Data.List as List
+import Data.Set as Set
 -- Representation of State
 -- M N Map (StartPos,CarInfo)
 -- The cars are represented by their size
@@ -53,8 +54,18 @@ countLength (c:rs) = 1 + (countLength rs)
 countWidth::String->Int
 countWidth str = length (List.filter (\x-> x == '\n') str)
 
---readState::String->State
+-- Returns the unique Characters of the String , excluding '.' and '\n'
+getKeys::String->[Key]
+getKeys str = List.filter (\x-> x /= '\n' && x /= '.') $ Set.toList $ Set.fromList str
 
+--getPairs::String->[(Key,Element)]
+{-
+readState::String->State
+readState str = (State wid len ms)
+                where
+                    wid = countWidth str
+                    len = countLength len
+-}
 
 
 -- gets the Direction of the element
@@ -80,7 +91,7 @@ newVal (c,d,(x,y)) a
     | a == East  = (c,d,(x,y+1))
     | a == West  = (c,d,(x,y-1))
 
-m = (State 2 3 (fromList [('c',(UpDir,3,(1,1))),('a',(RightDir,6,(2,2)))]))
+m = (State 2 3 (Map.fromList [('c',(UpDir,3,(1,1))),('a',(RightDir,6,(2,2)))]))
 
 makeMove::State->Move->State
 makeMove (State h w ms) (tp,dir) = (State h w ms')
