@@ -70,10 +70,11 @@ newVal (c,d,(x,y)) a
     | a == East  = (c,d,(x,y+1))
     | a == West  = (c,d,(x,y-1))
 
-{-makeMove::State->Move->State
+m = (State 2 3 (fromList [('c',(UpDir,3,(1,1))),('a',(RightDir,6,(2,2)))]))
+
+makeMove::State->Move->State
 makeMove (State h w ms) (tp,dir) = (State h w ms')
                             where
-                                oldVal =  ms ! (_,tp)
-                                val' = makeMove oldVal dir
-                                ms' = insert ms val'
--}
+                                oldVal =  ms ! tp
+                                val' = newVal oldVal dir
+                                ms' = insert tp val' ms
