@@ -2,6 +2,7 @@ module GameState
     ( State , getDir , getType
     ) where
 import Data.Char
+import Move
 --import Data.List
 import Data.Map as Map
 
