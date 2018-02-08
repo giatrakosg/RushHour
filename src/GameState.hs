@@ -33,7 +33,7 @@ type Element = (Orientation,CarSize,CarType)
 
 
 data State = State Int Int (Map CartCoord Element)
-                deriving (Show)
+                deriving (Show,Eq)
 
 
 -- gets the Direction of the element
