@@ -1,5 +1,5 @@
 module GameState
-    ( State , getDir , getType 
+    ( State , getDir , getType
     ) where
 import Data.Char
 --import Data.List
@@ -29,30 +29,21 @@ type CartCoord = (Int,Int)
 data Orientation = UpDir | RightDir deriving (Show)
 
 -- We store as values of Map  the size and the orientation
-type Element = (Orientation,CarSize)
+type Element = (Orientation,CarSize,CarType)
 
 
 data State = State Int Int (Map CartCoord Element)
                 deriving (Show)
 
-y::(CartCoord,Element)
-y = ((1,2),('c',UpDir,(1,2)))
-x::(CartCoord,Element)
-x = ((2,1),('c',UpDir,(2,1)))
-
--- gets the cartesian coordinates of the element
-getCoordinates::Element->CartCoord
-getCoordinates (_,_,x) = x
 
 -- gets the Direction of the element
 getDir::Element->Orientation
-getDir (_,x,_) = x
+getDir (x,_,_) = x
 
 --gets type of element
 getType::Element->CarType
-getType (x,_,_) = x
+getType (_,_,x) = x
+-- gets Size of element
+getSize::Element->CarSize
+getSize(_,x,_) = x
 -- Adds element to State
-addElement::State->Element->State
-addElement (State n l m) k = (State n l m')
-                                where
-                                    m' = Map.insert (getCoordinates k) k m
