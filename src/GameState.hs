@@ -58,6 +58,17 @@ countWidth str = length (List.filter (\x-> x == '\n') str)
 getKeys::String->[Key]
 getKeys str = List.filter (\x-> x /= '\n' && x /= '.') $ Set.toList $ Set.fromList str
 
+getCarLen::CarType->String->CarSize
+getCarLen tp str  = length $ List.filter (\x -> x == tp) str
+
+-- in normal coordinates
+getCarStartNorm::String->Char->Int
+getCarStartNorm (c:str) a = if a == c
+    then 0
+    else 1 + (getCarStartNorm str a )
+
+norm2cart::Int->Int->Int->CartCoord
+norm2cart rc len width = (rc `mod` len , rc `mod` width) 
 --getPairs::String->[(Key,Element)]
 {-
 readState::String->State
