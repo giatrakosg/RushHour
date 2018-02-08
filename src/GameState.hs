@@ -3,7 +3,7 @@ import Data.Char
 --import Move
 --import Data.List
 import Data.Map as Map
-
+import Data.List as List
 -- Representation of State
 -- M N Map (StartPos,CarInfo)
 -- The cars are represented by their size
@@ -50,6 +50,8 @@ countLength::String->Int
 countLength ('\n':rs) = 0
 countLength (c:rs) = 1 + (countLength rs)
 
+countWidth::String->Int
+countWidth str = length (List.filter (\x-> x == '\n') str)
 
 --readState::String->State
 
@@ -85,4 +87,4 @@ makeMove (State h w ms) (tp,dir) = (State h w ms')
                             where
                                 oldVal =  ms ! tp
                                 val' = newVal oldVal dir
-                                ms' = insert tp val' ms
+                                ms' = Map.insert tp val' ms
