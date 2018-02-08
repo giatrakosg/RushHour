@@ -1,8 +1,6 @@
-module GameState
-    ( State , getDir , getType
-    ) where
+
 import Data.Char
-import Move
+--import Move
 --import Data.List
 import Data.Map as Map
 
@@ -20,6 +18,16 @@ import Data.Map as Map
 -- a...2
 -- a...3
 
+data Direction = North | South | East | West deriving (Show,Eq)
+
+-- A move is a list of CarType and Directions that the Car
+-- is moved towards
+
+type Move = (CarType,Direction)
+getDir (_,x) = x
+getType (x,_) = x
+
+
 
 type CarSize = Int
 -- Color of the car
@@ -30,21 +38,42 @@ type CartCoord = (Int,Int)
 data Orientation = UpDir | RightDir deriving (Show)
 
 -- We store as values of Map  the size and the orientation
-type Element = (Orientation,CarSize,CarType)
+type Element = (Orientation,CarSize,CartCoord)
 
+type Key = CarType
 
-data State = State Int Int (Map CartCoord Element)
-                deriving (Show,Eq)
+data State = State Int Int (Map Key Element)
+                deriving (Show)
+
 
 
 -- gets the Direction of the element
-getDir::Element->Orientation
-getDir (x,_,_) = x
+getOr::Element->Orientation
+getOr (x,_,_) = x
 
 --gets type of element
-getType::Element->CarType
-getType (_,_,x) = x
+--getType::Element->CarType
+--getType (_,_,x) = x
+
+
 -- gets Size of element
 getSize::Element->CarSize
 getSize(_,x,_) = x
--- Adds element to State
+
+getCoord::Element->CartCoord
+getCoord(_,_,x) = x
+
+newVal::Element->Direction->Element
+newVal (c,d,(x,y)) a
+    | a == North = (c,d,(x+1,y))
+    | a == South = (c,d,(x-1,y))
+    | a == East  = (c,d,(x,y+1))
+    | a == West  = (c,d,(x,y-1))
+
+{-makeMove::State->Move->State
+makeMove (State h w ms) (tp,dir) = (State h w ms')
+                            where
+                                oldVal =  ms ! (_,tp)
+                                val' = makeMove oldVal dir
+                                ms' = insert ms val'
+-}
