@@ -1,3 +1,6 @@
+module GameState
+    ( State , getDir , getType 
+    ) where
 import Data.Char
 --import Data.List
 import Data.Map as Map
