@@ -46,6 +46,14 @@ data State = State Int Int (Map Key Element)
                 deriving (Show)
 
 
+countLength::String->Int
+countLength ('\n':rs) = 0
+countLength (c:rs) = 1 + (countLength rs)
+
+
+--readState::String->State
+
+
 
 -- gets the Direction of the element
 getOr::Element->Orientation
