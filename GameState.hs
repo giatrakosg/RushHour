@@ -16,11 +16,19 @@ import Data.Map as Map
 -- a...2
 -- a...3
 
+
+type CarSize = Int
+-- Color of the car
 type CarType = Char
+-- Cartesian Coordinates of the Car
 type CartCoord = (Int,Int)
+
 data Orientation = UpDir | RightDir deriving (Show)
 
-type Element = (CarType,Orientation,CartCoord)
+-- We store as values of Map  the size and the orientation
+type Element = (Orientation,CarSize)
+
+
 data State = State Int Int (Map CartCoord Element)
                 deriving (Show)
 
