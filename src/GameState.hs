@@ -19,6 +19,13 @@ import Data.Set as Set
 -- a...2
 -- a...3
 
+
+-- Board Coordinates Representation
+-- i\j 1 2  3   4  width = 3 , length = 4
+--  1  1 2   3  4 normal coordinates [1..12]
+--  2  5 6   7  8 Cartesian (i,j)
+--  3  9 10 11 12
+
 data Direction = North | South | East | West deriving (Show,Eq)
 
 -- A move is a list of CarType and Directions that the Car
@@ -73,12 +80,27 @@ norm2cart rc len width = (rc `div` width , rc `mod` len)
 cart2norm::CartCoord->Int->Int->Int
 cart2norm (x,y) len wid = (x-1)*len + y ;
 
-{-
+-- Replace Char b in string with char c
+replaceStr::String->Char->Char->String
+replaceStr [] _ _ = []
+replaceStr (a:str) c b = if (a == b) then c : (replaceStr str c b)
+    else a:(replaceStr str c b)
+
+-- Give a String Create List of String split at \n
+listify::String->[String]
+listify str = words str'
+                where str' = replaceStr str ' ' '\n'
+
+
+-- Finds orientation of CarType in String
 findOri::String->CarType->Orientation
-findOri str tp = if condition then expression else expression
-                    where
-                        fstApr = norm2cart $ getCarStartNorm str tp
--}
+findOri str ctype = if length matches == 1
+    then RightDir
+    else UpDir
+                where
+                    str' = listify str
+                    matches = [x | x <- str' , ctype `List.elem` x ]
+
 --getPairs::String->[(Key,Element)]
 {-
 readState::String->State
