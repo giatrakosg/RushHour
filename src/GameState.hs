@@ -116,14 +116,14 @@ getPairs str = zip keys elems
                     elems = List.zip3 oris sizes stpos
 
 
-{-
+
 readState::String->State
 readState str = (State wid len ms)
                 where
                     wid = countWidth str
-                    len = countLength len
--}
-
+                    len = countLength str
+                    pairs = getPairs str
+                    ms = Map.fromList pairs
 
 -- gets the Direction of the element
 getOr::Element->Orientation
