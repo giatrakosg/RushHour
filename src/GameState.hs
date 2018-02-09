@@ -68,7 +68,17 @@ getCarStartNorm (c:str) a = if a == c
     else 1 + (getCarStartNorm str a )
 
 norm2cart::Int->Int->Int->CartCoord
-norm2cart rc len width = (rc `mod` len , rc `mod` width) 
+norm2cart rc len width = (rc `div` width , rc `mod` len)
+
+cart2norm::CartCoord->Int->Int->Int
+cart2norm (x,y) len wid = (x-1)*len + y ;
+
+{-
+findOri::String->CarType->Orientation
+findOri str tp = if condition then expression else expression
+                    where
+                        fstApr = norm2cart $ getCarStartNorm str tp
+-}
 --getPairs::String->[(Key,Element)]
 {-
 readState::String->State
