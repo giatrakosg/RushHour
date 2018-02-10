@@ -115,7 +115,42 @@ getPairs str = zip keys elems
                     stpos = [norm2cart (getCarStartNorm str x) len width | x <- keys ]
                     elems = List.zip3 oris sizes stpos
 
+--Give the Size of the Car , orientation and Start returns a list of CarType and positions
+-- in board of the rest of the car
+decompr::Key->CarSize->Orientation->CartCoord->[(CarType,CartCoord)]
+decompr k sz UpDir (x,y) = [ (k,(x + l,y)) | l <- [1..sz]]
+decompr k sz RightDir (x,y) = [ (k,(x,y + l)) | l <- [1..sz]]
 
+fst3::(a,b,c)->a
+fst3 (x,_,_) = x
+snd3::(a,b,c)->b
+snd3 (_,x,_) = x
+trd3::(a,b,c)->c
+trd3 (_,_,x) = x
+
+-- Returns list of cartesian coordinates of Element
+expand::Element->[CartCoord]
+expand (RightDir,size,(x,y)) = [(x,y - l) | l <- [0..(size -1)]]
+expand (UpDir,size,(x,y)) = [(x - l,y) | l <- [0..(size -1)]]
+
+{-
+writeState::State->String
+writeState (State len width ms) = [x | x <- (List.map fst (sortBy (\x y -> snd x < snd y) allElems))]
+                                    where
+                                        ls = Map.toList ms
+                                        keys = List.map fst ls
+                                        ls' = List.map snd ls
+                                        splitLs = unzip3 ls'
+                                        oris    = fst3 splitLs
+                                        sizes   = snd3 splitLs
+                                        starts  = trd3 splitLs
+                                        cars = List.map decompr keys oris sizes starts
+                                        carPos = List.map snd cars
+                                        dots = [ ('.',(x,y)) | x <- [1..width] , y <-[1..len] , not ((x,y) `elem` carPos) ]
+                                        normDots = zip (fst dots) (List.map cart2norm len width (List.map snd dots))
+                                        normElems = zip (fst cars) (List.map cart2norm len width (List.map snd cars))
+                                        allElems = normDots ++ normElems
+-}
 
 readState::String->State
 readState str = (State wid len ms)
@@ -124,6 +159,7 @@ readState str = (State wid len ms)
                     len = countLength str
                     pairs = getPairs str
                     ms = Map.fromList pairs
+
 
 -- gets the Direction of the element
 getOr::Element->Orientation
