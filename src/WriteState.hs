@@ -1,5 +1,6 @@
 
 import GameState
+import ReadState
 import Data.List as List
 import Data.Map as Map
 import Data.Ord as Ord
