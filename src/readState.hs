@@ -1,5 +1,6 @@
 import GameState
 import Data.Map as Map
+import Data.List as List
 
 -- in normal coordinates
 getCarStartNorm::String->Char->Int
@@ -13,16 +14,16 @@ getPairs str = zip keys elems
                 where
                     width = countWidth str
                     len   = countLength str
-                    cleanStr = 
+                    cleanStr = clean str
                     keys  = getKeys str -- returns keys used in Map
                     oris  = [findOri str x | x <- keys ] -- orientations used in Map
                     sizes = [getCarLen str x | x <- keys ]
-                    stpos = [norm2cart (getCarStartNorm str x) len width | x <- keys ]
+                    stpos = [norm2cart len width (getCarStartNorm cleanStr x)  | x <- keys ]
                     elems = List.zip3 oris sizes stpos
 
 
 readState::String->State
-readState str = (State wid len ms)
+readState str = (State len wid ms)
                 where
                     wid = countWidth str
                     len = countLength str

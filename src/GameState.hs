@@ -45,6 +45,7 @@ type Element = (Orientation,CarSize,CartCoord)
 
 type Key = CarType
 
+-- State Length Width (Map Positions)
 data State = State Int Int (Map Key Element)
                 deriving (Show)
 
@@ -54,7 +55,7 @@ countLength ('\n':rs) = 0
 countLength (c:rs) = 1 + (countLength rs)
 
 countWidth::String->Int
-countWidth str = length (List.filter (\x-> x == '\n') str)
+countWidth str = length $ listify str
 
 -- Returns the unique Characters of the String , excluding '.' and '\n'
 -- It turns the string to a Set thus making all unique but keeping '.' ,'\n'
@@ -66,7 +67,7 @@ getCarLen::String->CarType->CarSize
 getCarLen str tp = length $ List.filter (\x -> x == tp) str
 
 norm2cart::Int->Int->Int->CartCoord
-norm2cart rc len width = (rc `div` width , rc `mod` len)
+norm2cart len width rc = ((rc `div` len) + 1, (rc `mod` len))
 
 cart2norm::Int->Int->CartCoord->Int
 cart2norm len wid (x,y) = (x-1)*len + y ;
