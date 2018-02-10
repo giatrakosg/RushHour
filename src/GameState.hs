@@ -1,3 +1,4 @@
+module GameState  where
 
 import Data.Char as Char
 import Data.Map as Map
@@ -67,7 +68,7 @@ getCarLen str tp = length $ List.filter (\x -> x == tp) str
 -- in normal coordinates
 getCarStartNorm::String->Char->Int
 getCarStartNorm (c:str) a = if a == c
-    then 0
+    then 1
     else 1 + (getCarStartNorm str a )
 
 norm2cart::Int->Int->Int->CartCoord
@@ -129,10 +130,19 @@ snd3 (_,x,_) = x
 trd3::(a,b,c)->c
 trd3 (_,_,x) = x
 
+-- Applies f with argument 1 from left list and argument 2 from right list
+-- returning results in list
+twofold::(a->[b]->c)->[a]->[[b]]->[c]
+twofold _ [] _ = []
+twofold f (x:xs) (y:ys) = (f x y) : (twofold f xs ys)
+
+
+
 -- Returns list of cartesian coordinates of Element
 expand::Element->[CartCoord]
 expand (RightDir,size,(x,y)) = [(x,y - l) | l <- [0..(size -1)]]
 expand (UpDir,size,(x,y)) = [(x - l,y) | l <- [0..(size -1)]]
+
 
 tuplify::CarType->[Int]->[(CarType,Int)]
 tuplify tp [] = []
@@ -143,35 +153,6 @@ deeptuples::[CarType]->[[Int]]->[[(CarType,Int)]]
 deeptuples [] _ = [[]]
 deeptuples (x:xs) (y:ys) = (tuplify x y) : (deeptuples xs ys)
 
-
-writeState::State->String
-writeState (State len width ms) = List.map fst srtPos
-                                    where
-                                        ls = Map.toList ms -- list of (keys,element)
-                                        elems = List.map snd ls -- list of elements
-                                        keys = List.map fst ls
-                                        expElems = List.map expand elems -- list of expanded elems
-                                        normExpElems = List.map ((\x -> List.map (cart2norm len width ) x )) expElems -- Normalized
-                                        flatExp = List.concat normExpElems
-                                        -- Normal coordinates of empty cells
-                                        -- List of all norm position not occupied
-                                        dotPos = [x | x <- [0..(width * len)] , not (x `elem` flatExp)]
-                                        -- Turn to tuple ('.',Position)
-                                        dots = tuplify '.' dotPos
-                                        expndElems = deeptuples keys normExpElems
-                                        allPos = expndElems ++ [dots]
-                                        flatPos = List.concat allPos
-                                        srtPos = List.sortBy (comparing snd) flatPos
-
-
-
-readState::String->State
-readState str = (State wid len ms)
-                where
-                    wid = countWidth str
-                    len = countLength str
-                    pairs = getPairs str
-                    ms = Map.fromList pairs
 
 
 -- gets the Direction of the element
