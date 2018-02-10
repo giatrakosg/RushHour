@@ -65,12 +65,6 @@ getKeys str = List.filter (\x-> x /= '\n' && x /= '.') $ Set.toList $ Set.fromLi
 getCarLen::String->CarType->CarSize
 getCarLen str tp = length $ List.filter (\x -> x == tp) str
 
--- in normal coordinates
-getCarStartNorm::String->Char->Int
-getCarStartNorm (c:str) a = if a == c
-    then 1
-    else 1 + (getCarStartNorm str a )
-
 norm2cart::Int->Int->Int->CartCoord
 norm2cart rc len width = (rc `div` width , rc `mod` len)
 
@@ -87,7 +81,11 @@ replaceStr (a:str) c b = if (a == b) then c : (replaceStr str c b)
 listify::String->[String]
 listify str = words str'
                 where str' = replaceStr str ' ' '\n'
-
+-- Returns string without the '\n'
+clean::String->String
+clean str = List.foldr (++) [] str'
+                where
+                    str' = listify str
 
 -- Finds orientation of CarType in String
 -- If the Car is horizontal that it will have all its elements in one line
@@ -105,17 +103,6 @@ findOri str ctype = if length matches == 1
 -- Returns List of Keys and Elements used in internal State Map
 -- Keys = ctype
 -- Element = (Orientation,CarSize,StartPos)
-
-getPairs::String->[(Key,Element)]
-getPairs str = zip keys elems
-                where
-                    width = countWidth str
-                    len   = countLength str
-                    keys  = getKeys str
-                    oris  = [findOri str x | x <- keys ]
-                    sizes = [getCarLen str x | x <- keys ]
-                    stpos = [norm2cart (getCarStartNorm str x) len width | x <- keys ]
-                    elems = List.zip3 oris sizes stpos
 
 --Give the Size of the Car , orientation and Start returns a list of CarType and positions
 -- in board of the rest of the car
