@@ -1,8 +1,9 @@
 
-import Data.Char
+import Data.Char as Char
 import Data.Map as Map
 import Data.List as List
 import Data.Set as Set
+import Data.Ord as Ord
 
 -- Representation of State
 -- M N (Map CarType (Orientation,Size,Pos))
@@ -72,8 +73,8 @@ getCarStartNorm (c:str) a = if a == c
 norm2cart::Int->Int->Int->CartCoord
 norm2cart rc len width = (rc `div` width , rc `mod` len)
 
-cart2norm::CartCoord->Int->Int->Int
-cart2norm (x,y) len wid = (x-1)*len + y ;
+cart2norm::Int->Int->CartCoord->Int
+cart2norm len wid (x,y) = (x-1)*len + y ;
 
 -- Replace Char b in string with char c
 replaceStr::String->Char->Char->String
@@ -133,24 +134,36 @@ expand::Element->[CartCoord]
 expand (RightDir,size,(x,y)) = [(x,y - l) | l <- [0..(size -1)]]
 expand (UpDir,size,(x,y)) = [(x - l,y) | l <- [0..(size -1)]]
 
-{-
+tuplify::CarType->[Int]->[(CarType,Int)]
+tuplify tp [] = []
+tuplify tp (n:ns) = (tp,n) : (tuplify tp ns)
+
+-- Tuplify a list of cartypes and norm positions
+deeptuples::[CarType]->[[Int]]->[[(CarType,Int)]]
+deeptuples [] _ = [[]]
+deeptuples (x:xs) (y:ys) = (tuplify x y) : (deeptuples xs ys)
+
+
 writeState::State->String
-writeState (State len width ms) = [x | x <- (List.map fst (sortBy (\x y -> snd x < snd y) allElems))]
+writeState (State len width ms) = List.map fst srtPos
                                     where
-                                        ls = Map.toList ms
+                                        ls = Map.toList ms -- list of (keys,element)
+                                        elems = List.map snd ls -- list of elements
                                         keys = List.map fst ls
-                                        ls' = List.map snd ls
-                                        splitLs = unzip3 ls'
-                                        oris    = fst3 splitLs
-                                        sizes   = snd3 splitLs
-                                        starts  = trd3 splitLs
-                                        cars = List.map decompr keys oris sizes starts
-                                        carPos = List.map snd cars
-                                        dots = [ ('.',(x,y)) | x <- [1..width] , y <-[1..len] , not ((x,y) `elem` carPos) ]
-                                        normDots = zip (fst dots) (List.map cart2norm len width (List.map snd dots))
-                                        normElems = zip (fst cars) (List.map cart2norm len width (List.map snd cars))
-                                        allElems = normDots ++ normElems
--}
+                                        expElems = List.map expand elems -- list of expanded elems
+                                        normExpElems = List.map ((\x -> List.map (cart2norm len width ) x )) expElems -- Normalized
+                                        flatExp = List.concat normExpElems
+                                        -- Normal coordinates of empty cells
+                                        -- List of all norm position not occupied
+                                        dotPos = [x | x <- [0..(width * len)] , not (x `elem` flatExp)]
+                                        -- Turn to tuple ('.',Position)
+                                        dots = tuplify '.' dotPos
+                                        expndElems = deeptuples keys normExpElems
+                                        allPos = expndElems ++ [dots]
+                                        flatPos = List.concat allPos
+                                        srtPos = List.sortBy (comparing snd) flatPos
+
+
 
 readState::String->State
 readState str = (State wid len ms)
