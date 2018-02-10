@@ -128,8 +128,8 @@ twofold f (x:xs) (y:ys) = (f x y) : (twofold f xs ys)
 
 -- Returns list of cartesian coordinates of Element
 expand::Element->[CartCoord]
-expand (RightDir,size,(x,y)) = [(x,y - l) | l <- [0..(size -1)]]
-expand (UpDir,size,(x,y)) = [(x - l,y) | l <- [0..(size -1)]]
+expand (RightDir,size,(x,y)) = [(x,y + l) | l <- [0..(size -1)]]
+expand (UpDir,size,(x,y)) = [(x + l,y) | l <- [0..(size -1)]]
 
 
 tuplify::CarType->[Int]->[(CarType,Int)]
