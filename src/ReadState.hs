@@ -1,4 +1,4 @@
-module ReadState
+module ReadState where 
 import GameState
 import Data.Map as Map
 import Data.List as List
