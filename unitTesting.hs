@@ -10,3 +10,6 @@ testMove = TestList ["Down" ~: "...\n..a\n..a" ~=? writeState (makeMove (readSta
                      "Right" ~: "...\n.aa\n..." ~=? writeState (makeMove (readState "...\naa.\n...") ('a',East)),
                      "Left" ~: "...\naa.\n..." ~=? writeState (makeMove (readState "...\n.aa\n...") ('a',West)),
                      "Up" ~: ".a.\n.a.\n..." ~=? writeState (makeMove (readState "...\n.a.\n.a.") ('a',North))]
+
+testEmpty = TestList ["Is Empty" ~: True ~=? isempty (readState "a.bb\na...") 2,
+                      "Has Element" ~: False ~=? isempty (readState "a.bb\na...") 3]
