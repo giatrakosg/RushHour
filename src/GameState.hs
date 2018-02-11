@@ -163,3 +163,13 @@ makeMove (State h w ms) (tp,dir) = (State h w ms')
                                 oldVal =  ms ! tp
                                 val' = newVal oldVal dir
                                 ms' = Map.insert tp val' ms
+
+-- Checks if normal position c is empty in given State
+isempty::State->Int->Bool
+isempty (State len wid ms) x = x `Set.member` setPos
+                            where
+                                elems = List.map snd (Map.toList ms)
+                                posCart = List.map expand (elems)
+                                posNorm = List.map (\x -> List.map (cart2norm len wid ) x ) posCart
+                                flatPos = List.concat posNorm
+                                setPos  = Set.fromList flatPos
