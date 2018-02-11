@@ -161,8 +161,8 @@ getCoord(_,_,x) = x
 
 newVal::Element->Direction->Element
 newVal (c,d,(x,y)) a
-    | a == North = (c,d,(x+1,y))
-    | a == South = (c,d,(x-1,y))
+    | a == North = (c,d,(x-1,y))
+    | a == South = (c,d,(x+1,y))
     | a == East  = (c,d,(x,y+1))
     | a == West  = (c,d,(x,y-1))
 
