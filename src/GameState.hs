@@ -82,6 +82,7 @@ replaceStr (a:str) c b = if (a == b) then c : (replaceStr str c b)
 listify::String->[String]
 listify str = words str'
                 where str' = replaceStr str ' ' '\n'
+
 -- Returns string without the '\n'
 clean::String->String
 clean str = List.foldr (++) [] str'
@@ -89,7 +90,7 @@ clean str = List.foldr (++) [] str'
                     str' = listify str
 
 -- Finds orientation of CarType in String
--- If the Car is horizontal that it will have all its elements in one line
+-- If the Car is horizontal then it will have all its elements in one line
 -- But if it is vertical in more that one
 -- We split the string into width lists at '\n'
 -- and count how many times the ctype is found in them
@@ -101,16 +102,13 @@ findOri str ctype = if length matches == 1
                             str' = listify str
                             matches = [x | x <- str' , ctype `List.elem` x ]
 
--- Returns List of Keys and Elements used in internal State Map
--- Keys = ctype
--- Element = (Orientation,CarSize,StartPos)
-
---Give the Size of the Car , orientation and Start returns a list of CarType and positions
+-- Give the Size of the Car , orientation and Start returns a list of CarType and positions
 -- in board of the rest of the car
 decompr::Key->CarSize->Orientation->CartCoord->[(CarType,CartCoord)]
 decompr k sz UpDir (x,y) = [ (k,(x + l,y)) | l <- [1..sz]]
 decompr k sz RightDir (x,y) = [ (k,(x,y + l)) | l <- [1..sz]]
 
+-- Generic functions used for handling 3-tuple
 fst3::(a,b,c)->a
 fst3 (x,_,_) = x
 snd3::(a,b,c)->b
@@ -124,9 +122,7 @@ twofold::(a->b->c)->[a]->[b]->[c]
 twofold _ [] _ = []
 twofold f (x:xs) (y:ys) = (f x y) : (twofold f xs ys)
 
-
-
--- Returns list of cartesian coordinates of Element
+-- Returns list of cartesian coordinates occupied by the Element
 expand::Element->[CartCoord]
 expand (RightDir,size,(x,y)) = [(x,y + l) | l <- [0..(size -1)]]
 expand (UpDir,size,(x,y)) = [(x + l,y) | l <- [0..(size -1)]]
@@ -135,36 +131,28 @@ tuplify::a->[b]->[(a,b)]
 tuplify tp [] = []
 tuplify tp (n:ns) = (tp,n) : (tuplify tp ns)
 
--- Tuplify a list of cartypes and norm positions
+-- Tuplify a list
 deeptuples::[a]->[[b]]->[[(a,b)]]
 deeptuples x y = twofold tuplify x y
 
 
-
--- gets the Direction of the element
 getOr::Element->Orientation
-getOr (x,_,_) = x
+getOr x = fst3 x
 
---gets type of element
---getType::Element->CarType
---getType (_,_,x) = x
-
-
--- gets Size of element
 getSize::Element->CarSize
-getSize(_,x,_) = x
+getSize x = snd3 x
 
 getCoord::Element->CartCoord
-getCoord(_,_,x) = x
+getCoord x = trd3 x
 
+-- The start position in Element is always the
+-- top most for UpDir and Left Most for RightDir
 newVal::Element->Direction->Element
 newVal (c,d,(x,y)) a
     | a == North = (c,d,(x-1,y))
     | a == South = (c,d,(x+1,y))
     | a == East  = (c,d,(x,y+1))
     | a == West  = (c,d,(x,y-1))
-
-m = (State 2 3 (Map.fromList [('c',(UpDir,3,(1,1))),('a',(RightDir,6,(2,2)))]))
 
 makeMove::State->Move->State
 makeMove (State h w ms) (tp,dir) = (State h w ms')
