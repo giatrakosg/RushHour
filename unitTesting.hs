@@ -1,7 +1,6 @@
 import GameState
 import ReadState
 import WriteState
-
 import Test.HUnit
 
 testState = TestList ["Correct Reading 4x4" ~: "a.bb\na.cc\ndddd" ~=? writeState (readState "a.bb\na.cc\ndddd" ),

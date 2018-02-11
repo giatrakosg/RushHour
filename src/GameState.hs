@@ -6,6 +6,18 @@ import Data.List as List
 import Data.Set as Set
 import Data.Ord as Ord
 
+
+data Direction = North | South | East | West deriving (Show,Eq)
+
+-- A move is a list of CarType and Directions that the Car
+-- is moved towards
+type Move = (CarType,Direction)
+getDir::Move->Direction
+getDir (_,x) = x
+getType::Move->CarType
+getType (x,_) = x
+
+
 -- Representation of State
 -- M N (Map CarType (Orientation,Size,Pos))
 -- The cars are represented by their size
@@ -20,15 +32,6 @@ import Data.Ord as Ord
 --  2  5 6   7  8 Cartesian (i,j)
 --  3  9 10 11 12
 
-
-data Direction = North | South | East | West deriving (Show,Eq)
--- A move is a list of CarType and Directions that the Car
--- is moved towards
-type Move = (CarType,Direction)
-getDir::Move->Direction
-getDir (_,x) = x
-getType::Move->CarType
-getType (x,_) = x
 
 
 

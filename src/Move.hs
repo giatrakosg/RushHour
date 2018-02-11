@@ -1,3 +1,0 @@
---module Move
---    ( Move , Direction
---    ) where
