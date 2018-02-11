@@ -166,7 +166,7 @@ makeMove (State h w ms) (tp,dir) = (State h w ms')
 
 -- Checks if normal position c is empty in given State
 isempty::State->Int->Bool
-isempty (State len wid ms) x = x `Set.member` setPos
+isempty (State len wid ms) x = not (x `Set.member` setPos)
                             where
                                 elems = List.map snd (Map.toList ms)
                                 posCart = List.map expand (elems)
