@@ -120,7 +120,7 @@ trd3 (_,_,x) = x
 
 -- Applies f with argument 1 from left list and argument 2 from right list
 -- returning results in list
-twofold::(a->[b]->c)->[a]->[[b]]->[c]
+twofold::(a->b->c)->[a]->[b]->[c]
 twofold _ [] _ = []
 twofold f (x:xs) (y:ys) = (f x y) : (twofold f xs ys)
 
