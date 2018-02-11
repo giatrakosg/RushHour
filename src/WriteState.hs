@@ -1,3 +1,4 @@
+module WriteState where
 
 import GameState
 import ReadState

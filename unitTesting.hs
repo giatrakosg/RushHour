@@ -1,4 +1,5 @@
 import GameState
-import Test.HUnit
+import ReadState
+import WriteState
 
-testState = TestList ["" ~: ~=? ]
+import Test.HUnit
