@@ -20,6 +20,14 @@ addCharEvery str c x = List.concat withBreak
                         where
                             splat = splitTillEmpty str x
                             withBreak = List.map (\x -> x ++ [c]) splat
+-- Write State works as follows :
+-- 1. Find list of expanded elements (see expand)
+-- 2. Convert to normal coordinates
+-- 3. Find all positions not occupied by the expanded elements
+-- 4. Make a list ('.',x) where x member of set of unused positions
+-- 5. Append the lists and sort them by normal coordinates
+-- 6. Add 'n' at every length element
+-- 7. Print one after the other
 
 writeState::State->String
 writeState (State len width ms) = init $ init $ addCharEvery (List.map fst srtPos) '\n' len
@@ -35,6 +43,7 @@ writeState (State len width ms) = init $ init $ addCharEvery (List.map fst srtPo
                                         dotPos = [x | x <- [1..(width * len)] , not (x `elem` flatExp)]
                                         -- Turn to tuple ('.',Position)
                                         dots = tuplify '.' dotPos
+                                        -- Turn to [[('a',Pos1),..],[('b',Pos1)..]]
                                         expndElems = deeptuples keys normExpElems
                                         allPos = expndElems ++ [dots]
                                         flatPos = List.concat allPos
