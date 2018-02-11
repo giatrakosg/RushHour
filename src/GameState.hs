@@ -131,15 +131,13 @@ expand::Element->[CartCoord]
 expand (RightDir,size,(x,y)) = [(x,y + l) | l <- [0..(size -1)]]
 expand (UpDir,size,(x,y)) = [(x + l,y) | l <- [0..(size -1)]]
 
-
-tuplify::CarType->[Int]->[(CarType,Int)]
+tuplify::a->[b]->[(a,b)]
 tuplify tp [] = []
 tuplify tp (n:ns) = (tp,n) : (tuplify tp ns)
 
 -- Tuplify a list of cartypes and norm positions
-deeptuples::[CarType]->[[Int]]->[[(CarType,Int)]]
-deeptuples [] _ = [[]]
-deeptuples (x:xs) (y:ys) = (tuplify x y) : (deeptuples xs ys)
+deeptuples::[a]->[[b]]->[[(a,b)]]
+deeptuples x y = twofold tuplify x y
 
 
 
