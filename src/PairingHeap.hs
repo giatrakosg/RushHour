@@ -33,3 +33,8 @@ instance Heap PairingHeap where
     findMin (T x hs) = x
 
     deleteMin (T x hs) = mergePairs hs
+
+
+fromList::(Ord a)=>[a]->PairingHeap a
+fromList [] = E
+fromList (x:xs) = insert x (fromList xs)
