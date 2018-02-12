@@ -1,13 +1,9 @@
-module ReadState where 
+module ReadState where
 import GameState
 import Data.Map as Map
 import Data.List as List
 
 -- in normal coordinates
-getCarStartNorm::String->Char->Int
-getCarStartNorm (c:str) a = if a == c
-    then 1
-    else 1 + (getCarStartNorm str a )
 
 
 getPairs::String->[(Key,Element)]

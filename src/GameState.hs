@@ -41,7 +41,7 @@ type CarType = Char
 -- Cartesian Coordinates of the Car
 type CartCoord = (Int,Int)
 
-data Orientation = UpDir | RightDir deriving (Show)
+data Orientation = UpDir | RightDir deriving (Show,Eq)
 
 -- We store as values of Map  the size and the orientation
 type Element = (Orientation,CarSize,CartCoord)
@@ -119,6 +119,9 @@ snd3 (_,x,_) = x
 trd3::(a,b,c)->c
 trd3 (_,_,x) = x
 
+addTup::(Int,Int)->(Int,Int)->(Int,Int)
+addTup (x1,y1) (x2,y2) = (x1 + x2 , y1 + y2)
+
 -- Applies f with argument 1 from left list and argument 2 from right list
 -- returning results in list
 twofold::(a->b->c)->[a]->[b]->[c]
@@ -164,12 +167,7 @@ makeMove (State h w ms) (tp,dir) = (State h w ms')
                                 val' = newVal oldVal dir
                                 ms' = Map.insert tp val' ms
 
--- Checks if normal position c is empty in given State
-isempty::State->Int->Bool
-isempty (State len wid ms) x = not (x `Set.member` setPos)
-                            where
-                                elems = List.map snd (Map.toList ms)
-                                posCart = List.map expand (elems)
-                                posNorm = List.map (\x -> List.map (cart2norm len wid ) x ) posCart
-                                flatPos = List.concat posNorm
-                                setPos  = Set.fromList flatPos
+getCarStartNorm::String->Char->Int
+getCarStartNorm (c:str) a = if a == c
+    then 1
+    else 1 + (getCarStartNorm str a )
