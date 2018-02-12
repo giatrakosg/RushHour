@@ -1,3 +1,8 @@
+-- Found at Chris Okasaki
+-- Purely Functional Data Structures
+-- page 210 (Edition 1998)
+
+
 module PairingHeap
     ( PairingHeap
     ) where

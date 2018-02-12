@@ -1,3 +1,9 @@
+-- Found at Chris Okasaki
+-- Purely Functional Data Structures
+-- page 210 (Edition 1998)
+
+
+
 module Heap (Heap(..)) where
     class Heap h where
         empty     :: (Ord a) => h a
