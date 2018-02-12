@@ -23,5 +23,8 @@ testMovement = TestList ["Back-Forth" ~: [1,4] ~=? carMoves (readState ".aa.\n..
                          "Only Left"  ~: [1] ~=? carMoves (readState ".aa\n...") 'a' ,
                          "Only Up"    ~: [2] ~=? carMoves (readState "...\n.a.\n.a.") 'a',
                          "Only Down"  ~: [8] ~=? carMoves (readState ".a.\n.a.\n...") 'a',
-                         "Blocked Up&Down" ~: [] ~=? carMoves (readState ".bb\n.a.\n.a.\n.cc") 'a',
-                         "One Elem up/down , up , down " ]
+                         "Blocked Up&Down" ~: [] ~=? carMoves (readState ".bb\n.a.\n.a.\n.cc") 'a']
+
+testSucc = TestList ["No Possible Moves" ~: 0 ~=? length (successorMoves $ readState "aab\n..b") ,
+                     "1 Possible Move" ~: 1 ~=? length (successorMoves $ readState "aab\n..b\n..."),
+                     "2 Possible Moves" ~: 2 ~=? length (successorMoves $ readState "aa.\nbb.")]                         
