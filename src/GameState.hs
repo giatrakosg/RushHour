@@ -70,7 +70,7 @@ getCarLen::String->CarType->CarSize
 getCarLen str tp = length $ List.filter (\x -> x == tp) str
 
 norm2cart::Int->Int->Int->CartCoord
-norm2cart len wid rc = head [(x,y) | x <- [1..wid] , y<- [1..len] , cart2norm len wid (x,y) == rc] 
+norm2cart len wid rc = head [(x,y) | x <- [1..wid] , y<- [1..len] , cart2norm len wid (x,y) == rc]
 
 cart2norm::Int->Int->CartCoord->Int
 cart2norm len wid (x,y) = (x-1)*len + y ;
