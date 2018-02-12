@@ -22,4 +22,6 @@ testMovement = TestList ["Back-Forth" ~: [1,4] ~=? carMoves (readState ".aa.\n..
                          "Only Right" ~: [3] ~=? carMoves (readState "aa.\n...") 'a',
                          "Only Left"  ~: [1] ~=? carMoves (readState ".aa\n...") 'a' ,
                          "Only Up"    ~: [2] ~=? carMoves (readState "...\n.a.\n.a.") 'a',
-                         "Only Down"  ~: [8] ~=? carMoves (readState ".a.\n.a.\n...") 'a']
+                         "Only Down"  ~: [8] ~=? carMoves (readState ".a.\n.a.\n...") 'a',
+                         "Blocked Up&Down" ~: [] ~=? carMoves (readState ".bb\n.a.\n.a.\n.cc") 'a',
+                         "One Elem up/down , up , down " ]

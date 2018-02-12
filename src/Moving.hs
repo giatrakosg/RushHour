@@ -47,3 +47,25 @@ isempty (State len wid ms) x = not (x `Set.member` setPos)
                                 posNorm = List.map (\x -> List.map (cart2norm len wid ) x ) posCart
                                 flatPos = List.concat posNorm
                                 setPos  = Set.fromList flatPos
+turn2move::State->CarType->CartCoord->Move
+turn2move st1@(State len wid ms) tp crt  | fst crtPos < fst crt = (tp,South)
+                                         | fst crtPos > fst crt = (tp,North)
+                                         | snd crtPos < snd crt = (tp,West)
+                                         | snd crtPos > snd crt = (tp,East)
+                                         where
+                                             nrmPos = getCarStartNorm (writeState st1) tp
+                                             crtPos = norm2cart len wid nrmPos
+moveList::State->CarType->[CartCoord]->[Move]
+moveList st1@(State len wid ms) tp ls = List.map (turn2move st1 tp ) ls
+
+deepMoveList::State->[CarType]->[[CartCoord]]->[[Move]]
+deepMoveList _     _     []   = [[]]
+deepMoveList st1 (t:tp) (l:ls) = (moveList st1 t l) : (deepMoveList st1 tp ls)
+
+successorMoves::State->[(Move,Int)]
+successorMoves st1@(State len wid ms) = List.zip (List.concat $ deepMoveList st1 keys crtMvs) [0,0..]
+                                        where
+                                            pairLs = getPairs (writeState st1)
+                                            keys = List.map fst pairLs
+                                            mvs = List.map (\x -> carMoves st1 x) keys
+                                            crtMvs = List.map (\x -> List.map (norm2cart len wid ) x) mvs
