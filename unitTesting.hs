@@ -2,6 +2,7 @@ import GameState
 import ReadState
 import WriteState
 import Moving
+import FinalState
 
 import Test.HUnit
 
@@ -27,4 +28,7 @@ testMovement = TestList ["Back-Forth" ~: [1,4] ~=? carMoves (readState ".aa.\n..
 
 testSucc = TestList ["No Possible Moves" ~: 0 ~=? length (successorMoves $ readState "aab\n..b") ,
                      "1 Possible Move" ~: 1 ~=? length (successorMoves $ readState "aab\n..b\n..."),
-                     "2 Possible Moves" ~: 2 ~=? length (successorMoves $ readState "aa.\nbb.")]                         
+                     "2 Possible Moves" ~: 2 ~=? length (successorMoves $ readState "aa.\nbb.")]
+
+testFinal = TestList ["Is Final" ~: True ~=? finalState (readState ".==\n..."),
+                      "Isn't Final" ~: False ~=? finalState (readState "==.\n...")]
