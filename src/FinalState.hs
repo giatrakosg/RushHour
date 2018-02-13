@@ -5,10 +5,9 @@ import ReadState
 import Data.Map as Map
 
 finalState::State->Bool
-finalState st1@(State len wid ms) = (xC,yC) `elem` expnd
+finalState (State len _ ms) = (xC,yC) `elem` expnd
                                     where
-                                        keys = getKeys (writeState st1)
                                         keyElm = ms ! '='
                                         expnd = expand keyElm
-                                        xC = fst $ expnd !! 0
+                                        xC = fst (expnd !! 0)
                                         yC = len

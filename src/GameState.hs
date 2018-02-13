@@ -1,10 +1,8 @@
 module GameState  where
 
-import Data.Char as Char
 import Data.Map as Map
 import Data.List as List
 import Data.Set as Set
-import Data.Ord as Ord
 
 
 data Direction = North | South | East | West deriving (Show,Eq)
@@ -50,12 +48,13 @@ type Key = CarType
 
 -- State Length Width (Map Positions)
 data State = State Int Int (Map Key Element)
-                deriving (Show)
+                deriving (Show,Eq)
 
 
 countLength::String->Int
-countLength ('\n':rs) = 0
-countLength (c:rs) = 1 + (countLength rs)
+countLength []       = 0
+countLength ('\n':_) = 0
+countLength (_:rs)   = 1 + (countLength rs)
 
 countWidth::String->Int
 countWidth str = length $ listify str
@@ -73,7 +72,7 @@ norm2cart::Int->Int->Int->CartCoord
 norm2cart len wid rc = head [(x,y) | x <- [1..wid] , y<- [1..len] , cart2norm len wid (x,y) == rc]
 
 cart2norm::Int->Int->CartCoord->Int
-cart2norm len wid (x,y) = (x-1)*len + y ;
+cart2norm len _ (x,y) = (x-1)*len + y ;
 
 -- Replace Char b in string with char c
 replaceStr::String->Char->Char->String
@@ -125,6 +124,7 @@ addTup (x1,y1) (x2,y2) = (x1 + x2 , y1 + y2)
 -- Applies f with argument 1 from left list and argument 2 from right list
 -- returning results in list
 twofold::(a->b->c)->[a]->[b]->[c]
+twofold _ _ [] = []
 twofold _ [] _ = []
 twofold f (x:xs) (y:ys) = (f x y) : (twofold f xs ys)
 
@@ -134,9 +134,7 @@ expand (RightDir,size,(x,y)) = [(x,y + l) | l <- [0..(size -1)]]
 expand (UpDir,size,(x,y)) = [(x + l,y) | l <- [0..(size -1)]]
 
 tuplify::a->[b]->[(a,b)]
-tuplify tp [] = []
-tuplify tp (n:ns) = (tp,n) : (tuplify tp ns)
-
+tuplify tp ls = zip (take (length ls) (repeat tp)) ls
 -- Tuplify a list
 deeptuples::[a]->[[b]]->[[(a,b)]]
 deeptuples x y = twofold tuplify x y
