@@ -1,4 +1,4 @@
-module AStar where
+module Main where
 
 import Heap        as Heap
 import PairingHeap as PairingHeap
@@ -31,17 +31,16 @@ expand node closed = Set.toList (Set.union closed nodeSet)
                         succMoves = List.map fst (successorMoves (state node))
                         succStates = List.map (makeMove (state node) ) succMoves
                         succNodes = List.map (\x ->Node x gScore' hScore' fScore' node ) succStates
-                                    where
-                                        gScore' = (gScore node) + 1
-                                        hScore' = 0
-                                        fScore' = gScore' + hScore'
+                        gScore' = (gScore node) + 1
+                        hScore' = 0
+                        fScore' = gScore' + hScore'
                         nodeSet    = Set.fromList succNodes
 
 find::Node->[Node]->Maybe Node
 find _ [] = Nothing
 find x (y:ys) = if x == y
     then Just y
-    else AStar.find x ys
+    else Main.find x ys
 
 visit :: [Node] -> (PairingHeap Node) -> (PairingHeap Node)
 visit [] open = open
@@ -51,10 +50,10 @@ visit (n:ns) open
     | otherwise         = visit ns open -- If it not new , or cheaper to get to the State then continue
     where
         isNewNeighbor     = not (n `elem` open') -- State doesn't exist
-        isCheaperNeighbor = gScore n < gScore dupN  -- there is a way to go to the same
+        isCheaperNeighbor = fScore n < fScore dupN  -- there is a way to go to the same
                                                     -- state cheaper
         open'             = PairingHeap.toList open
-        Just dupN         = AStar.find n open'    -- Node with same state
+        Just dupN         = Main.find n open'    -- Node with same state
 
 replace :: Node -> [Node] -> [Node]
 replace _    []   = []
@@ -74,17 +73,23 @@ initState st = Node st gS hS fS Root
                         hS = 0
                         fS = gS + hS
 solve_astar :: State -> [State]
-solve_astar st = aStar (PairingHeap.fromList [initState st]) (Set.fromList [])
+solve_astar st = aStar (PairingHeap.fromList [fnod]) (Set.fromList [])
+                        where
+                            fnod = initState st
 
-aStar :: (PairingHeap Node) -> Set Node -> [State]
+aStar :: (PairingHeap Node) -> (Set Node) -> [State]
 aStar open closed
-        | Heap.isEmpty open = error "Unsolveable puzzle."
+        | (Heap.isEmpty open) = error "Unsolveable puzzle."
+        | isntNew   = aStar open' closed
         | isGoal    = stepsTaken current
         | otherwise = aStar open'' closed'
         where
             current   = Heap.findMin open
+            isntNew   = current `Set.member` closed
             isGoal    = finalState (state current)
             open'     = Heap.deleteMin open
-            neighbors = (AStar.expand) current closed
+            neighbors = (Main.expand) current closed
             open''    = visit neighbors open'
             closed'   = Set.insert current closed
+
+main = putStrLn (List.concat (List.map writeState (solve_astar (readState "...\n==a\n..a"))))
