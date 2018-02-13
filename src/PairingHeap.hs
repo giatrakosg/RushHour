@@ -15,6 +15,16 @@ mergePairs [] = E
 mergePairs [h] = h
 mergePairs (h1:h2:hs) = merge (merge h1 h2) (mergePairs hs)
 
+elemHeap::(Eq a)=>a->(PairingHeap a)->Bool
+elemHeap x (E)     = False
+elemHeap x (T y []) = x == y
+elemHeap x (T y (h:hs)) = if x == y
+    then True
+    else or (h' : hs')
+            where
+                hs' = map (elemHeap x) hs
+                h'  = elemHeap x h
+
 instance Heap PairingHeap where
     empty = E
     isEmpty E = True
