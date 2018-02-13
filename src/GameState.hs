@@ -164,8 +164,11 @@ makeMove (State h w ms) (tp,dir) = (State h w ms')
                                 oldVal =  ms ! tp
                                 val' = newVal oldVal dir
                                 ms' = Map.insert tp val' ms
+index::String->Char->Int
+index [] _ = 1
+index (a:str) c = if a == c
+    then 1
+    else 1 + (index str c)
 
 getCarStartNorm::String->Char->Int
-getCarStartNorm (c:str) a = if a == c
-    then 1
-    else 1 + (getCarStartNorm str a )
+getCarStartNorm str c = index (clean str) c
