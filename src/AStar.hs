@@ -72,8 +72,8 @@ initState st = Node st gS hS fS Root
                         gS = 0
                         hS = 0
                         fS = gS + hS
-solve_astar :: State -> [State]
-solve_astar st = aStar (PairingHeap.fromList [fnod]) (Set.fromList [])
+solve_astar :: State -> [String]
+solve_astar st = List.map writeState (aStar (PairingHeap.fromList [fnod]) (Set.fromList []))
                         where
                             fnod = initState st
 
@@ -92,4 +92,23 @@ aStar open closed
             open''    = visit neighbors open'
             closed'   = Set.insert current closed
 
-main = putStrLn (List.concat (List.map writeState (solve_astar (readState "...\n==a\n..a"))))
+aStar2:: (PairingHeap Node) -- Heap of Open nodes
+        -> (Set Node) -- Set of seen nodes
+        -> (Node -> [(Node,Int)]) -- Function that returns successive nodes
+        -> (Node -> Int) -- Heuristic that calculates cost of moving to that node
+        -> (Node -> Bool) -- Function that returns true if desired node
+        -> [Move] -- Result is a list of moves (In case of no solution returns error )
+
+aStar2 open closed succNodes isFinal heuristic
+                | (Heap.isEmpty open) = error "Unsolveable Puzzle " -- No Nodes to search
+                | isFinal current = getMoves current
+                | isntNew current = aStar2 open' closed succNodes isFinal heuristic -- If already seen discard
+                | otherwise = aStar2 open' closed'' succNodes isFinal heuristic -- Expand current node , and place
+                -- the result in the closed set
+                where
+                    current = Heap.findMin open -- Current node is cheapest in Heap
+                    isntNew current = current `Set.member` closed
+                    open' = Heap.deleteMin open
+                    closed' = Set.insert current closed
+                    neighbors = succNodes current
+                    open'' = visit neighbors open' -- Adds the neighbor nodes to the open set 

@@ -44,7 +44,7 @@ astarSearch startNode isGoalNode nextNodeFn heuristic =
         -- which have not been seen yet
         successors =
           filter (\(s, g, _) ->
-                    not (Set.member s seen') &&
+                    not (Set.member s seen') && -- Successor Node not already seen
                       (not (s `Map.member` gscore)
                         || g < (fromJust . Map.lookup s $ gscore)))
           $ successorsAndCosts node gcost
@@ -52,12 +52,16 @@ astarSearch startNode isGoalNode nextNodeFn heuristic =
         -- Insert the successors in the open set
         pq'' = foldl' (\q (s, g, h) -> PQ.insert (g + h) (s, g) q) pq' successors
 
-        gscore' = foldl' (\m (s, g, _) -> Map.insert s g m) gscore successors
+        gscore' = foldl' (\m (s, g, _) -> Map.insert s g m) gscore successors -- successive applications
+        -- *foldl' = 
+        -- Basically p ... (p (p a x1) x2 ) ... xn
+        -- p function , a initial value , [x1..xn]
 
         -- Insert the tracks of the successors
         tracks' = foldl' (\m (s, _, _) -> Map.insert s node m) tracks successors
 
     -- Finds the successors of a given node and their costs
+    -- returns tuple (node,gcost,hcost)
     successorsAndCosts node gcost =
       map (\(s, g) -> (s, gcost + g, heuristic s)) . nextNodeFn $ node
 
