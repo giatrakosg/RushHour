@@ -67,7 +67,7 @@ deepMoveList _     []     _   = [[]]
 deepMoveList st1 (t:tp) (l:ls) = (moveList st1 t l) : (deepMoveList st1 tp ls)
 
 successorMoves::State->[(Move,Int)]
-successorMoves st1@(State len wid _) = List.zip (List.concat $ deepMoveList st1 keys crtMvs) [0,0..]
+successorMoves st1@(State len wid _) = List.zip (List.concat $ deepMoveList st1 keys crtMvs) [1,1..]
                                         where
                                             -- list of pairs
                                             pairLs = getPairs (writeState st1)
