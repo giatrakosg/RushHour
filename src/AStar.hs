@@ -14,20 +14,19 @@ import Heuristic
 
 
 solve_astar :: State -> [Move]
-solve_astar st = aStar (PairingHeap.fromList [initState st]) (Set.fromList []) succNodes heuristic isFinalNode
+solve_astar st = aStar (PairingHeap.fromList [initState st]) (Set.fromList []) heuristic isFinalNode
 
 aStar:: (PairingHeap Node) -- Heap of Open nodes
         -> (Set Node) -- Set of seen nodes
-        -> (Node -> (State->Int) -> [Node]) -- Function that returns successive nodes ,using heuristic
         -> (State -> Int) -- Heuristic that calculates cost of moving to that node
         -> (Node -> Bool) -- Function that returns true if desired node
         -> [Move] -- Result is a list of moves (In case of no solution returns error )
 
-aStar open closed succNodes heuristic isFinalFn
+aStar open closed heuristic isFinalFn
                 | (Heap.isEmpty open) = error "Unsolveable Puzzle " -- No Nodes to search
                 | isFinalFn current = stepsTaken current
-                | isntNew current = aStar open' closed succNodes heuristic isFinalFn -- If already seen discard
-                | otherwise = aStar open'' closed' succNodes heuristic isFinalFn -- Expand current node , and place
+                | isntNew current = aStar open' closed heuristic isFinalFn -- If already seen discard
+                | otherwise = aStar open'' closed' heuristic isFinalFn -- Expand current node , and place
                 -- the result in the closed set
                 where
                     current = Heap.findMin open -- Current node is cheapest in Heap

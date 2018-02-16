@@ -1,0 +1,8 @@
+3rd test = 998s
+2nd test = 2s
+1st test = 1s
+
+Without cheaper neighbor test 
+2nd test = 1.1s 
+1st test = 0.8s
+3rd test = 353s
