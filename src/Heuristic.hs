@@ -36,4 +36,4 @@ carsfront st@(State len wid ms) = countinlineRight lst allCoords
                                         lst = last expnd -- Furthest to the right
 
 heuristic::State->Int
-heuristic st = 3*(carsfront st) + (2*(pos2end st))
+heuristic st = (carsfront st) + (pos2end st)
