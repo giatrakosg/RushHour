@@ -1,11 +1,10 @@
 module FinalState where
 import GameState
-import WriteState
 import ReadState
 import Data.Map as Map
 
 finalState::State->Bool
-finalState (State len _ ms) = (xC,yC) `elem` expnd
+finalState (State len _ ms _) = (xC,yC) `elem` expnd
                                     where
                                         keyElm = ms ! '='
                                         expnd = expand keyElm
