@@ -30,7 +30,7 @@ addCharEvery str c x = List.concat withBreak
 -- 7. Print one after the other
 
 writeState::State->String
-writeState (State len width ms) = init $ init $ addCharEvery (List.map fst srtPos) '\n' len
+writeState (State len width ms _) = init $ init $ addCharEvery (List.map fst srtPos) '\n' len
                                     where
                                         ls = Map.toList ms -- list of (keys,element)
                                         elems = List.map snd ls -- list of elements
