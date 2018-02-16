@@ -19,17 +19,19 @@ data Node = Root (GameState.State )
 instance Eq Node where
     m == n = (getState m []) == (getState n [])
 instance Ord Node where
+    n       <= (Root m) = False
     (Root m) <= n = True
-    n         <= (Root m) = True
     m <= n = ((gScore m) + (hScore m) ) <= ((gScore n) + (hScore n))
 
 makeMoves::State->[Move]->State
 makeMoves st ls = List.foldl' GameState.makeMove st ls
 
+-- Given a node and the empty list , returns the state
 getState::Node->[Move]->State
 getState (Root st) mvs = List.foldl' GameState.makeMove st mvs
 getState (nd) mvs = getState (prev nd) (mvs ++ [move nd])
 
+-- Function that given a node and a heuristic returns list of nodes
 succNodes::Node->(State->Int)->[Node]
 succNodes (Root st) heuristic = List.map (\(x,y) -> Node x y h (Root st)) (successorMoves st)
                                 where
@@ -37,8 +39,9 @@ succNodes (Root st) heuristic = List.map (\(x,y) -> Node x y h (Root st)) (succe
 succNodes nd heuristic = List.map (\(x,y) -> Node x (y + (gScore nd)) (heuristic (makeMoves state (ls' ++ [x]) )) nd) (successorMoves state)
                             where
                                 state = getState nd []
-                                ls' = stepsTaken (prev nd)
-
+                                ls' = stepsTaken nd
+-- Replaces node in list with other node
+-- Used two nodes have the same state but different costs
 replace :: Node -> [Node] -> [Node]
 replace _    []   = []
 replace new (x:xs)
@@ -51,6 +54,7 @@ find x (y:ys) = if x == y
     then Just y
     else Node.find x ys
 
+-- Returns list of Moves from Root State
 stepsTaken::Node->[Move]
 stepsTaken (Root _) = []
 stepsTaken m    = (stepsTaken (prev m)) ++ [move m]
@@ -66,11 +70,11 @@ visit (n:ns) open
     | otherwise         = visit ns open -- If it not new , or cheaper to get to the State then continue
     where
         isNewNeighbor     = not (n `elem` open') -- State doesn't exist
-        isCheaperNeighbor = (gScore n) + (hScore n) < (gScore dupN) + (hScore dupN)  -- there is a way to go to the same
+        isCheaperNeighbor = ((gScore n) + (hScore n)) < ((gScore dupN) + (hScore dupN))  -- there is a way to go to the same
                                                     -- state cheaper
         open'             = PairingHeap.toList open
         Just dupN         = Node.find n open'    -- Node with same state
-        open''            = PairingHeap.fromList (replace n open')
+        open''            = Heap.insert n open
 
 -- Expand all neighbor nodes to node that are not already in closed
 -- By using a Set we ensure that we don't have duplicates
