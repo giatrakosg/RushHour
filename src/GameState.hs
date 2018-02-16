@@ -45,8 +45,8 @@ type Element = (Orientation,CarSize,CartCoord)
 
 type Key = CarType
 
--- State Length Width (Map Positions)
-data State = State Int Int (Map Key Element)
+-- State Length Width (Map CarType(=Key) Element) (Set Positions occupied)
+data State = State Int Int (Map Key Element) (Set Int)
                 deriving (Show,Eq)
 
 
@@ -150,12 +150,19 @@ newVal (c,d,(x,y)) a
     | a == East  = (c,d,(x,y+1))
     | a == West  = (c,d,(x,y-1))
 
+
+
 makeMove::State->Move->State
-makeMove (State h w ms) (tp,dir) = (State h w ms')
+makeMove (State len wid ms ss) (tp,dir) = (State len wid ms' ss'')
                             where
                                 oldVal =  ms ! tp
+                                expnd = List.map (cart2norm len wid) (expand oldVal)
+                                ss' = List.foldl' (\x y -> Set.delete y x) ss expnd -- Delete old used elements
                                 val' = newVal oldVal dir
                                 ms' = Map.insert tp val' ms
+                                expnd' = List.map (cart2norm len wid)  (expand val')
+                                ss'' = List.foldl' (\x y -> Set.insert y x) ss expnd'
+
 index::String->Char->Int
 index [] _ = 1
 index (a:str) c = if a == c
