@@ -10,30 +10,28 @@ import WriteState
 
 -- How far away from the end is the car
 pos2end::State->Int
-pos2end st@(State len wid ms) = len - (snd lst)
+pos2end st@(State len wid ms _) = len - (snd lst)
                                 where
                                     target = ms ! '='
                                     crt = trd3 target
                                     expnd = expand target
                                     lst = last expnd -- Furthest to the right
 
-countinlineRight::CartCoord->[CartCoord]->Int
-countinlineRight _ [] = 0
-countinlineRight (a,b) (((x,y)):ls) = if (a == x) && (b < y)
-    then 1 + (countinlineRight (a,b) ls)
-    else 0 + (countinlineRight (a,b) ls)
-
--- How many cars are in front
+-- How many cars are in front of '='
 carsfront::State->Int
-carsfront st@(State len wid ms) = countinlineRight lst allCoords
-                                    where
-                                        elements = Map.elems ms
-                                        elemCoords = List.map (\x -> expand x) elements
-                                        allCoords = List.concat elemCoords
-                                        target = ms ! '='
-                                        crt = trd3 target
-                                        expnd = expand target
-                                        lst = last expnd -- Furthest to the right
+carsfront st@(State len wid ms ss) = Set.size ss'
+                                     where
+                                         crt' =  ms ! '=' -- Position of '='
+                                         crt = last $ expand crt'
+                                         xC = fst crt
+                                         yC = snd crt
+                                         end = (xC,len)
+                                         minR = cart2norm len wid crt
+                                         maxR = cart2norm len wid end
+                                         ss' = Set.intersection (Set.fromList [(minR + 1)..maxR]) ss
+
+
+
 
 heuristic::State->Int
 heuristic st = (carsfront st) + (pos2end st)
