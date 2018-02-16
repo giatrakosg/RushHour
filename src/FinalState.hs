@@ -1,7 +1,7 @@
 module FinalState where
 import GameState
 import ReadState
-import Data.Map as Map
+import Data.Map.Strict as Map
 
 finalState::State->Bool
 finalState (State len _ ms _) = (xC,yC) `elem` expnd

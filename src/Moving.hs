@@ -3,7 +3,7 @@ import WriteState
 import GameState
 import ReadState
 
-import Data.Map as Map
+import Data.Map.Strict as Map
 import Data.List as List
 import Data.Set as Set
 
@@ -34,22 +34,23 @@ isvalid::State->CartCoord->Bool
 isvalid st1@(State len wid _ _) (x,y) = (isempty st1 (cart2norm len wid (x,y))) && (inborder st1 (x,y))
 
 
--- Returns all valid moves of given CarType
+-- Returns all valid move positions of given CarType
+-- Finds the neighboring cells of tp and filters them by validity
 carMoves::State->CarType->[Int]
-carMoves st1@(State len wid _ _) tp = List.map (cart2norm len wid) (List.filter (\x -> isvalid st1 x) nbr)
+carMoves st1@(State len wid ms _) tp = List.map (cart2norm len wid) (List.filter (\x -> isvalid st1 x) nbr)
                                  where
-                                     nbr = neighbours st1 tp (findOri (writeState st1) tp)
+                                     nbr = neighbours st1 tp (fst3 $ ms ! tp )
 
 turn2move::State->CarType->CartCoord->Move
-turn2move st1@(State len wid _ _) tp crt
+turn2move st1@(State len wid ms _) tp crt
                                          | crtPos == crt = error "Invalid Move"
                                          | fst crtPos < fst crt = (tp,South)
                                          | fst crtPos > fst crt = (tp,North)
                                          | snd crtPos < snd crt = (tp,East)
-                                         | snd crtPos > snd crt =  (tp,West)
+                                         | snd crtPos > snd crt = (tp,West)
                                          where
-                                             nrmPos = getCarStartNorm (writeState st1) tp
-                                             crtPos = norm2cart len wid nrmPos
+                                             crtPos = trd3 $ ms ! tp
+
 moveList::State->CarType->[CartCoord]->[Move]
 moveList  _   _  [] = []
 moveList st1 tp ls = List.map (\x -> (turn2move st1 tp x)) ls
@@ -60,12 +61,10 @@ deepMoveList _     []     _   = [[]]
 deepMoveList st1 (t:tp) (l:ls) = (moveList st1 t l) : (deepMoveList st1 tp ls)
 
 successorMoves::State->[(Move,Int)]
-successorMoves st1@(State len wid _ _) = List.zip (List.concat $ deepMoveList st1 keys crtMvs) [1,1..]
+successorMoves st1@(State len wid ms _) = List.zip (List.concat $ deepMoveList st1 keys crtMvs) [1,1..]
                                         where
-                                            -- list of pairs
-                                            pairLs = getPairs (writeState st1)
                                             -- list of keys
-                                            keys = getKeys (writeState st1)
+                                            keys = Map.keys ms
                                             -- list of valid moves for each car type
                                             mvs = List.map (\x -> carMoves st1 x) keys
                                             -- valid moves in cartesian coordinates

@@ -3,7 +3,7 @@ module Heuristic
     ) where
 import GameState
 import Data.Set as Set
-import Data.Map as Map
+import Data.Map.Strict as Map
 import Data.List as List
 import ReadState
 import WriteState

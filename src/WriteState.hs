@@ -3,7 +3,7 @@ module WriteState where
 import GameState
 import ReadState
 import Data.List as List
-import Data.Map as Map
+import Data.Map.Strict as Map
 import Data.Ord as Ord
 
 splitTillEmpty::[a]->Int->[[a]]

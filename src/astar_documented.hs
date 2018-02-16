@@ -1,3 +1,6 @@
+module AStarSearch
+    ( astarSearch
+    ) where
 import qualified Data.PQueue.Prio.Min as PQ
 import qualified Data.HashSet as Set
 import qualified Data.HashMap.Strict as Map
@@ -53,7 +56,7 @@ astarSearch startNode isGoalNode nextNodeFn heuristic =
         pq'' = foldl' (\q (s, g, h) -> PQ.insert (g + h) (s, g) q) pq' successors
 
         gscore' = foldl' (\m (s, g, _) -> Map.insert s g m) gscore successors -- successive applications
-        -- *foldl' = 
+        -- *foldl' =
         -- Basically p ... (p (p a x1) x2 ) ... xn
         -- p function , a initial value , [x1..xn]
 

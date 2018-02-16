@@ -1,4 +1,4 @@
-module Node where
+module Node2 where
 
 import GameState as GameState
 import Data.List as List
@@ -9,37 +9,37 @@ import PairingHeap as PairingHeap
 import FinalState as FinalState
 import Data.Set    as Set
 
-data Node = Root (GameState.State )
-            | Node { move :: Move ,
+data Node = Root
+            | Node { state :: State ,
+                     moves :: [Move] ,
                      gScore :: Int ,
                      hScore :: Int ,
                      prev :: Node }
                     deriving (Show)
 
 instance Eq Node where
-    m == n = (getState m []) == (getState n [])
+    m == n = (state m ) == (state n)
 instance Ord Node where
-    n       <= (Root m) = False
-    (Root m) <= n = True
+    n       <= Root = False
+    Root <= n = True
     m <= n = ((gScore m) + (hScore m) ) <= ((gScore n) + (hScore n))
 
 initState :: State -> Node
-initState st = Root st
+initState st = (Node st [] 0 0 Root)
+
 
 makeMoves::State->[Move]->State
 makeMoves st ls = List.foldl' GameState.makeMove st ls
 
 -- Given a node and the empty list , returns the state
 getState::Node->[Move]->State
-getState (Root st) mvs = List.foldl' GameState.makeMove st mvs
-getState (nd) mvs = getState (prev nd) (mvs ++ [move nd])
+getState nd _ = state nd
+
 
 -- Function that given a node and a heuristic returns list of nodes
 succNodes::Node->(State->Int)->[Node]
-succNodes (Root st) heuristic = List.map (\(x,y) -> Node x y h (Root st)) (successorMoves st)
-                                where
-                                    h = heuristic st
-succNodes nd heuristic = List.map (\(x,y) -> Node x (y + (gScore nd)) (heuristic (makeMoves state (ls' ++ [x]) )) nd) (successorMoves state)
+succNodes (Root) heuristic = []
+succNodes nd heuristic = List.map (\(x,y) -> Node (makeMove state x) ((moves nd) ++ [x]) (y + (gScore nd)) (heuristic (makeMove state x)) nd) (successorMoves state)
                             where
                                 state = getState nd []
                                 ls' = stepsTaken nd
@@ -55,12 +55,12 @@ find::Node->[Node]->Maybe Node
 find _ [] = Nothing
 find x (y:ys) = if x == y
     then Just y
-    else Node.find x ys
+    else Node2.find x ys
 
 -- Returns list of Moves from Root State
 stepsTaken::Node->[Move]
-stepsTaken (Root _) = []
-stepsTaken m    = (stepsTaken (prev m)) ++ [move m]
+stepsTaken (Root ) = []
+stepsTaken m    = moves m
 
 isFinalNode::Node->Bool
 isFinalNode nd = finalState (getState nd [])
@@ -76,7 +76,7 @@ visit (n:ns) open
         isCheaperNeighbor = ((gScore n) + (hScore n)) < ((gScore dupN) + (hScore dupN))  -- there is a way to go to the same
                                                     -- state cheaper
         open'             = PairingHeap.toList open
-        Just dupN         = Node.find n open'    -- Node with same state
+        Just dupN         = Node2.find n open'    -- Node with same state
         open''            = Heap.insert n open
 
 -- Expand all neighbor nodes to node that are not already in closed
