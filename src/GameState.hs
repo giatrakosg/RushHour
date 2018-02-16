@@ -161,7 +161,7 @@ makeMove (State len wid ms ss) (tp,dir) = (State len wid ms' ss'')
                                 val' = newVal oldVal dir
                                 ms' = Map.insert tp val' ms
                                 expnd' = List.map (cart2norm len wid)  (expand val')
-                                ss'' = List.foldl' (\x y -> Set.insert y x) ss expnd'
+                                ss'' = List.foldl' (\x y -> Set.insert y x) ss' expnd'
 
 index::String->Char->Int
 index [] _ = 1
