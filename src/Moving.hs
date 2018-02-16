@@ -1,4 +1,4 @@
-module Moving where
+module Moving (successorMoves) where
 import WriteState
 import GameState
 import ReadState
@@ -7,8 +7,9 @@ import Data.Map as Map
 import Data.List as List
 import Data.Set as Set
 
+-- Returns square up / down of car type or left / right
 neighbours::State->CarType->Orientation->[CartCoord]
-neighbours (State _ _ ms) tp UpDir = [top',lst']
+neighbours (State _ _ ms _) tp UpDir = [top',lst']
                                             where
                                                 elm = ms ! tp
                                                 ls = expand elm
@@ -16,7 +17,7 @@ neighbours (State _ _ ms) tp UpDir = [top',lst']
                                                 lst = last ls
                                                 top' = (addTup (top) (-1,0))
                                                 lst' = (addTup (lst) (1,0))
-neighbours (State _ _ ms) tp RightDir = [left,right]
+neighbours (State _ _ ms _) tp RightDir = [left,right]
                                             where
                                                 elm = ms ! tp
                                                 ls = expand elm
@@ -26,31 +27,23 @@ neighbours (State _ _ ms) tp RightDir = [left,right]
                                                 right = (addTup (lst) (0,1))
 
 inborder::State->CartCoord->Bool
-inborder (State len wid _) (x,y) = ((0 < x) && (x <= wid)) && ((0 < y) && (y <= len))
+inborder (State len wid _ _) (x,y) = ((0 < x) && (x <= wid)) && ((0 < y) && (y <= len))
 isempty::State->Int->Bool
-isempty (State len wid ms) x = not (x `Set.member` setPos)
-                            where
-                                elems = List.map snd (Map.toList ms)
-                                posCart = List.map expand (elems)
-                                posNorm = List.map (\x -> List.map (cart2norm len wid ) x ) posCart
-                                flatPos = List.concat posNorm
-                                setPos  = Set.fromList flatPos
-
+isempty (State len wid ms ss) x = not (x `Set.member` ss)
 isvalid::State->CartCoord->Bool
-isvalid st1@(State len wid _) (x,y) = (isempty st1 (cart2norm len wid (x,y))) && (inborder st1 (x,y))
+isvalid st1@(State len wid _ _) (x,y) = (isempty st1 (cart2norm len wid (x,y))) && (inborder st1 (x,y))
 
 
 -- Returns all valid moves of given CarType
 carMoves::State->CarType->[Int]
-carMoves st1@(State len wid _) tp = List.map (cart2norm len wid) (List.filter (\x -> isvalid st1 x) nbr)
+carMoves st1@(State len wid _ _) tp = List.map (cart2norm len wid) (List.filter (\x -> isvalid st1 x) nbr)
                                  where
                                      nbr = neighbours st1 tp (findOri (writeState st1) tp)
 
--- Checks if normal position c is empty in given State
 turn2move::State->CarType->CartCoord->Move
-turn2move st1@(State len wid _) tp crt
-                                        | crtPos == crt = error "Invalid Move"
-                                        | fst crtPos < fst crt = (tp,South)
+turn2move st1@(State len wid _ _) tp crt
+                                         | crtPos == crt = error "Invalid Move"
+                                         | fst crtPos < fst crt = (tp,South)
                                          | fst crtPos > fst crt = (tp,North)
                                          | snd crtPos < snd crt = (tp,East)
                                          | snd crtPos > snd crt =  (tp,West)
@@ -67,7 +60,7 @@ deepMoveList _     []     _   = [[]]
 deepMoveList st1 (t:tp) (l:ls) = (moveList st1 t l) : (deepMoveList st1 tp ls)
 
 successorMoves::State->[(Move,Int)]
-successorMoves st1@(State len wid _) = List.zip (List.concat $ deepMoveList st1 keys crtMvs) [1,1..]
+successorMoves st1@(State len wid _ _) = List.zip (List.concat $ deepMoveList st1 keys crtMvs) [1,1..]
                                         where
                                             -- list of pairs
                                             pairLs = getPairs (writeState st1)
