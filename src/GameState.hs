@@ -5,11 +5,13 @@ import Data.List as List
 import Data.Set as Set
 
 
+-- Direction a car move towards
 data Direction = North | South | East | West deriving (Show,Eq)
 
 -- A move is a list of CarType and Directions that the Car
 -- is moved towards
 type Move = (CarType,Direction)
+
 getDir::Move->Direction
 getDir (_,x) = x
 getType::Move->CarType
@@ -29,9 +31,6 @@ getType (x,_) = x
 --  1  1 2   3  4 normal coordinates [1..12]
 --  2  5 6   7  8 Cartesian (i,j)
 --  3  9 10 11 12
-
-
-
 
 type CarSize = Int
 -- Color of the car
@@ -65,12 +64,12 @@ countWidth str = length $ listify str
 getKeys::String->[Key]
 getKeys str = List.filter (\x-> x /= '\n' && x /= '.') $ Set.toList $ Set.fromList str
 
+-- Gets Length of Car by counting how many occurences there are
 getCarLen::String->CarType->CarSize
 getCarLen str tp = length $ List.filter (\x -> x == tp) str
 
 norm2cart::Int->Int->Int->CartCoord
 norm2cart len wid rc = head [(x,y) | x <- [1..wid] , y<- [1..len] , cart2norm len wid (x,y) == rc]
-
 cart2norm::Int->Int->CartCoord->Int
 cart2norm len _ (x,y) = (x-1)*len + y ;
 
@@ -104,12 +103,6 @@ findOri str ctype = if length matches == 1
                             str' = listify str
                             matches = [x | x <- str' , ctype `List.elem` x ]
 
--- Give the Size of the Car , orientation and Start returns a list of CarType and positions
--- in board of the rest of the car
-decompr::Key->CarSize->Orientation->CartCoord->[(CarType,CartCoord)]
-decompr k sz UpDir (x,y) = [ (k,(x + l,y)) | l <- [1..sz]]
-decompr k sz RightDir (x,y) = [ (k,(x,y + l)) | l <- [1..sz]]
-
 -- Generic functions used for handling 3-tuple
 fst3::(a,b,c)->a
 fst3 (x,_,_) = x
@@ -129,23 +122,22 @@ twofold _ [] _ = []
 twofold f (x:xs) (y:ys) = (f x y) : (twofold f xs ys)
 
 -- Returns list of cartesian coordinates occupied by the Element
+-- The start position of RightDir elements is the leftmost square
+-- The start position of UpDir    elements is the upmost square
 expand::Element->[CartCoord]
 expand (RightDir,size,(x,y)) = [(x,y + l) | l <- [0..(size -1)]]
 expand (UpDir,size,(x,y)) = [(x + l,y) | l <- [0..(size -1)]]
 
 tuplify::a->[b]->[(a,b)]
-tuplify tp ls = zip (take (length ls) (repeat tp)) ls
--- Tuplify a list
+tuplify tp ls = zip (repeat tp) ls
+
 deeptuples::[a]->[[b]]->[[(a,b)]]
 deeptuples x y = twofold tuplify x y
 
-
 getOr::Element->Orientation
 getOr x = fst3 x
-
 getSize::Element->CarSize
 getSize x = snd3 x
-
 getCoord::Element->CartCoord
 getCoord x = trd3 x
 
