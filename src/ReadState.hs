@@ -2,7 +2,7 @@ module ReadState where
 import GameState
 import Data.Map as Map
 import Data.List as List
-
+import Data.Set as Set
 -- in normal coordinates
 
 
@@ -20,9 +20,14 @@ getPairs str = zip keys elems
 
 
 readState::String->State
-readState str = (State len wid ms)
+readState str = (State len wid ms ss)
                 where
                     wid = countWidth str
                     len = countLength str
                     pairs = getPairs str
+                    elems = List.map snd pairs
+                    expnd = List.concat (List.map expand elems)
+                    allNorm = List.map (cart2norm len wid ) expnd
+
                     ms = Map.fromList pairs
+                    ss = Set.fromList allNorm
