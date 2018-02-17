@@ -46,12 +46,6 @@ succNodes nd heuristic = List.map (\(x,y) -> Node (makeMove state' x)
                             where
                                 state' = state nd
 
-find::Node->[Node]->(Maybe Node)
-find _ [] = Nothing
-find x (y:ys) = if x == y
-    then Just y
-    else Node2.find x ys
-
 -- Returns list of Moves from Root State
 stepsTaken::Node->[Move]
 stepsTaken (Root ) = []
