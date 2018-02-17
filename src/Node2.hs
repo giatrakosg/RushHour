@@ -67,7 +67,7 @@ visit (n:ns) open
 -- Expand all neighbor nodes to node that are not already in closed
 -- By using a Set we ensure that we don't have duplicates
 expand :: Node -> (Set Node) -> (State -> Int) ->[Node]
-expand node closed heuristic = Set.toList (Set.difference nodeSet closed )
+expand node closed heuristic = List.filter (\x -> not (x `List.elem` closedls)) nodes
                     where
                         nodes = succNodes node heuristic
-                        nodeSet    = Set.fromList nodes
+                        closedls = Set.toList closed
