@@ -36,8 +36,8 @@ isvalid st1@(State len wid _ _) (x,y) = (isempty st1 (cart2norm len wid (x,y))) 
 
 -- Returns all valid move positions of given CarType
 -- Finds the neighboring cells of tp and filters them by validity
-carMoves::State->CarType->[Int]
-carMoves st1@(State len wid ms _) tp = List.map (cart2norm len wid) (List.filter (\x -> isvalid st1 x) nbr)
+carMoves::State->CarType->[CartCoord]
+carMoves st1@(State len wid ms _) tp = List.filter (\x -> isvalid st1 x) nbr
                                  where
                                      nbr = neighbours st1 tp (fst3 $ ms ! tp )
 
@@ -66,6 +66,4 @@ successorMoves st1@(State len wid ms _) = List.zip (List.concat $ deepMoveList s
                                             -- list of keys
                                             keys = Map.keys ms
                                             -- list of valid moves for each car type
-                                            mvs = List.map (\x -> carMoves st1 x) keys
-                                            -- valid moves in cartesian coordinates
-                                            crtMvs = List.map (\x -> List.map (norm2cart len wid ) x) mvs
+                                            crtMvs = List.map (\x -> carMoves st1 x) keys
