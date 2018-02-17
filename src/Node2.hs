@@ -46,14 +46,6 @@ succNodes nd heuristic = List.map (\(x,y) -> Node (makeMove state' x)
                             where
                                 state' = state nd
 
--- Replaces node in list with other node
--- Used two nodes have the same state but different costs
-replace :: Node -> [Node] -> [Node]
-replace _    []   = []
-replace new (x:xs)
-    | new == x = new : xs
-    | otherwise      = x   : (replace new xs)
-
 find::Node->[Node]->(Maybe Node)
 find _ [] = Nothing
 find x (y:ys) = if x == y
@@ -73,7 +65,6 @@ visit :: [Node] -> (PairingHeap Node) -> (PairingHeap Node)
 visit [] open = open
 visit (n:ns) open
     | isNewNeighbor     = visit ns (Heap.insert n open) -- If it is new add it to the list of open
---    | isCheaperNeighbor = visit ns open'' -- If it is cheaper replace it
     | otherwise         = visit ns open -- If it not new , or cheaper to get to the State then continue
     where
         isNewNeighbor     = not (n `elemHeap` open) -- State doesn't exist
