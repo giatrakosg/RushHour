@@ -150,8 +150,6 @@ newVal (c,d,(x,y)) a
     | a == East  = (c,d,(x,y+1))
     | a == West  = (c,d,(x,y-1))
 
-
-
 makeMove::State->Move->State
 makeMove (State len wid ms ss) (tp,dir) = (State len wid ms' ss'')
                             where
@@ -160,7 +158,7 @@ makeMove (State len wid ms ss) (tp,dir) = (State len wid ms' ss'')
                                 ss' = List.foldl' (\x y -> Set.delete y x) ss expnd -- Delete old used elements
                                 val' = newVal oldVal dir
                                 ms' = Map.insert tp val' ms
-                                expnd' = List.map (cart2norm len wid)  (expand val')
+                                expnd' = List.map (cart2norm len wid) (expand val')
                                 ss'' = List.foldl' (\x y -> Set.insert y x) ss' expnd'
 
 index::String->Char->Int
