@@ -7,49 +7,72 @@ import Data.Map.Strict as Map
 import Data.List as List
 import Data.Set as Set
 
--- Returns square up / down of car type or left / right
+getVertNorms::Int->Int->Int->[Int]
+getVertNorms i len wid = [i + (j*len) | j <- [0..(wid - 1)]]
+
+-- Returns all squares up / down of car type or left / right
 neighbours::State->CarType->Orientation->[CartCoord]
-neighbours (State _ _ ms _) tp UpDir = [top',lst']
+neighbours (State len wid ms ss) tp UpDir = up ++ down
+                                            where
+                                                elm = ms ! tp -- The element to move
+                                                (x0,y0) = trd3 elm -- Coordinates of element
+                                                sz = snd3 elm -- Size of element
+                                                up = [(x,y0) | x <- [1..(x0-1)]] -- All positions above
+                                                down = [(x,y0)| x <- [(x0+1)..(wid-sz+1)]] -- All positions below it can fit
+neighbours (State len wid ms ss) tp RightDir = left ++ right
                                             where
                                                 elm = ms ! tp
-                                                ls = expand elm
-                                                top = head ls
-                                                lst = last ls
-                                                top' = (addTup (top) (-1,0))
-                                                lst' = (addTup (lst) (1,0))
-neighbours (State _ _ ms _) tp RightDir = [left,right]
-                                            where
-                                                elm = ms ! tp
-                                                ls = expand elm
-                                                top = head ls
-                                                lst = last ls
-                                                left = (addTup (top) (0,-1))
-                                                right = (addTup (lst) (0,1))
+                                                (x0,y0) = trd3 elm
+                                                sz = snd3 elm
+                                                left = [(x0,y) | y <- [1..(y0-1)]]
+                                                right = [(x0,y) | y <- [(y0+1)..(len-sz+1)]]
 
 inborder::State->CartCoord->Bool
 inborder (State len wid _ _) (x,y) = ((0 < x) && (x <= wid)) && ((0 < y) && (y <= len))
-isempty::State->Int->Bool
-isempty (State len wid ms ss) x = not (x `Set.member` ss)
-isvalid::State->CartCoord->Bool
-isvalid st1@(State len wid _ _) (x,y) = (isempty st1 (cart2norm len wid (x,y))) && (inborder st1 (x,y))
+isempty::State->CartCoord->CarType->Bool
+isempty (State len wid ms ss) (x,y) tp = not (crt `Set.member` ss')
+                                  where
+                                      elm = ms ! tp
+                                      expnSet = Set.fromList $ List.map (cart2norm len wid) $ expand elm
+                                      ss' = Set.difference ss expnSet
+                                      crt = cart2norm len wid (x,y)
+
+nocollision::State->CartCoord->CarType->Bool
+nocollision st@(State len wid ms ss) to tp = if (Set.size ss'' == 0)
+    then True
+    else False
+                                             where
+                                                 elm = ms ! tp
+                                                 ori = fst3 elm
+                                                 sz = snd3 elm
+                                                 newEl = (ori,sz,to)
+                                                 exp' = expand newEl
+                                                 expSet' = Set.fromList $ List.map (cart2norm len wid ) exp'
+                                                 expn = Set.fromList $ List.map (cart2norm len wid) $ expand elm -- previous positions
+                                                 ss' = Set.difference ss expn
+                                                 ss'' = Set.intersection ss' expSet'
+
+isvalid::State->CartCoord->CarType->Bool
+isvalid st1@(State len wid _ _) (x,y) tp = (isempty st1 (x,y) tp) && (inborder st1 (x,y))
+                                            && (nocollision st1 (x,y) tp)
 
 
 -- Returns all valid move positions of given CarType
 -- Finds the neighboring cells of tp and filters them by validity
 carMoves::State->CarType->[CartCoord]
-carMoves st1@(State len wid ms _) tp = List.filter (\x -> isvalid st1 x) nbr
+carMoves st1@(State len wid ms _) tp = List.filter (\x -> isvalid st1 x tp) nbr
                                  where
                                      nbr = neighbours st1 tp (fst3 $ ms ! tp )
 
 turn2move::State->CarType->CartCoord->Move
 turn2move st1@(State len wid ms _) tp crt
-                                         | crtPos == crt = error "Invalid Move"
-                                         | fst crtPos < fst crt = (tp,South)
-                                         | fst crtPos > fst crt = (tp,North)
-                                         | snd crtPos < snd crt = (tp,East)
-                                         | snd crtPos > snd crt = (tp,West)
+                                         | oldPos == crt = error "Invalid Move"
+                                         | fst oldPos < fst crt = (tp,South,(fst crt) - (fst oldPos))
+                                         | fst oldPos > fst crt = (tp,North,(fst oldPos) - (fst crt))
+                                         | snd oldPos < snd crt = (tp,East ,(snd crt) - (snd oldPos))
+                                         | snd oldPos > snd crt = (tp,West ,(snd oldPos) - (snd crt))
                                          where
-                                             crtPos = trd3 $ ms ! tp
+                                             oldPos = trd3 $ ms ! tp -- Old position
 
 moveList::State->CarType->[CartCoord]->[Move]
 moveList  _   _  [] = []
