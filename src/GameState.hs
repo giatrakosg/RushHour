@@ -9,14 +9,9 @@ import Data.Set as Set
 data Direction = North | South | East | West deriving (Show,Eq)
 
 -- A move is a list of CarType and Directions that the Car
--- is moved towards
-type Move = (CarType,Direction)
-
-getDir::Move->Direction
-getDir (_,x) = x
-getType::Move->CarType
-getType (x,_) = x
-
+-- is moved towards , and how many tiles
+type Positions = Int
+type Move = (CarType,Direction,Positions)
 
 -- Representation of State
 -- M N (Map CarType (Orientation,Size,Pos))
@@ -45,7 +40,7 @@ type Element = (Orientation,CarSize,CartCoord)
 
 type Key = CarType
 
--- State Length Width (Map CarType(=Key) Element) (Set Positions occupied)
+-- State Length Width (Map CarType(=Key) Element) (Set Positions occupied ,by )
 data State = State Int Int (Map Key Element) (Set Int)
                 deriving (Show,Eq)
 
@@ -143,23 +138,25 @@ getCoord x = trd3 x
 
 -- The start position in Element is always the
 -- top most for UpDir and Left Most for RightDir
-newVal::Element->Direction->Element
-newVal (c,d,(x,y)) a
-    | a == North = (c,d,(x-1,y))
-    | a == South = (c,d,(x+1,y))
-    | a == East  = (c,d,(x,y+1))
-    | a == West  = (c,d,(x,y-1))
+newVal::Element->Direction->Positions->Element
+newVal (c,d,(x,y)) a pss
+    | a == North = (c,d,(x-pss,y))
+    | a == South = (c,d,(x+pss,y))
+    | a == East  = (c,d,(x,y+pss))
+    | a == West  = (c,d,(x,y-pss))
 
 makeMove::State->Move->State
-makeMove (State len wid ms ss) (tp,dir) = (State len wid ms' ss'')
+makeMove (State len wid ms ss) (tp,dir,pss) = (State len wid ms' ss'')
                             where
                                 oldVal =  ms ! tp
-                                expnd = List.map (cart2norm len wid) (expand oldVal)
-                                ss' = List.foldl' (\x y -> Set.delete y x) ss expnd -- Delete old used elements
-                                val' = newVal oldVal dir
+                                expnd = expand oldVal
+                                ss' = List.foldl' (\x y -> Set.delete (cart2norm len wid y) x) ss expnd -- Delete old used elements
+                                val' = newVal oldVal dir pss
                                 ms' = Map.insert tp val' ms
-                                expnd' = List.map (cart2norm len wid) (expand val')
-                                ss'' = List.foldl' (\x y -> Set.insert y x) ss' expnd'
+                                expnd' = expand val'
+                                ss'' = List.foldl' (\x y -> Set.insert (cart2norm len wid y) x) ss' expnd'
+
+
 
 index::String->Char->Int
 index [] _ = 1
