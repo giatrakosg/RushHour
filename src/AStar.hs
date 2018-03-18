@@ -9,7 +9,7 @@ import GameState   as GameState
 import ReadState
 import WriteState
 import FinalState
-import Node2       as Node
+import Node       as Node
 import Heuristic
 
 
