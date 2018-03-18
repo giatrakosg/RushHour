@@ -112,9 +112,7 @@ addTup (x1,y1) (x2,y2) = (x1 + x2 , y1 + y2)
 -- Applies f with argument 1 from left list and argument 2 from right list
 -- returning results in list
 twofold::(a->b->c)->[a]->[b]->[c]
-twofold _ _ [] = []
-twofold _ [] _ = []
-twofold f (x:xs) (y:ys) = (f x y) : (twofold f xs ys)
+twofold f xs ys = pure (f) <*> xs <*> ys
 
 -- Returns list of cartesian coordinates occupied by the Element
 -- The start position of RightDir elements is the leftmost square
