@@ -1,12 +1,9 @@
-import GameState
-import ReadState
-import WriteState
-import Moving
+import Main
 import FinalState
-
+import Node
 import Test.HUnit
 
-
+{-
 testState = TestList ["Correct Reading 4x4" ~: "a.bb\na.cc\ndddd" ~=? writeState (readState "a.bb\na.cc\ndddd" ),
                       "Correct Reading 5x4" ~: "a..b\na..b\nad..\n.d..\nccc." ~=? writeState (readState "a..b\na..b\nad..\n.d..\nccc." )]
 
@@ -32,3 +29,8 @@ testSucc = TestList ["No Possible Moves" ~: 0 ~=? length (successorMoves $ readS
 
 testFinal = TestList ["Is Final" ~: True ~=? finalState (readState ".==\n..."),
                       "Isn't Final" ~: False ~=? finalState (readState "==.\n...")]
+
+-}
+testSolve = TestList ["Uneven" ~: True ~=> finalState $ makeMoves state1 (solve_astar state1) ]
+                where
+                    state1 = readState "==0123456789abcdefghij\n..0123456789abcdefghij\n......................\n"

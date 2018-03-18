@@ -1,4 +1,4 @@
-module Main where
+module AStar where
 
 import Heap        as Heap
 import PairingHeap as PairingHeap
@@ -35,7 +35,3 @@ aStar open closed heuristic isFinalFn
                     closed' = Set.insert current closed -- Insert current to closed
                     neighbors = Node.expand current closed heuristic -- Find neighbours of current
                     open'' = visit neighbors open' -- Adds the neighbor nodes to the open set
-
-main = putStrLn $ writeState (makeMoves state (solve_astar state ))
-        where
-            state = readState "aaabcd\neffbcd\ne.==cd\nggh...\n.ih.jj\n.ikkll\n"
