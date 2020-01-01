@@ -1,5 +1,5 @@
 # RushHour 
-This project implements a solution to the game Rush Hour([desciption](https://en.wikipedia.org/wiki/Rush_Hour_(puzzle))
+This project implements a solution to the game Rush Hour[desciption](https://en.wikipedia.org/wiki/Rush_Hour_(puzzle))
 using an A Star search 
 
 ## Usage
